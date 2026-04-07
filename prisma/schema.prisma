@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" 
+}
+model Tenant{
+  id         String @id @default(uuid())
+  name       String
+  users      User[]
+  customers Customer[]
+  bookings  Booking[]
+  invoices  Invoice[]
+  staff     Staff[]
+  createdAt  DateTime @default(now())
+
+}
+
+model User{
+  id          String @id @default(uuid())
+  email       String @unique
+  password    String
+  name        String?
+  tenantId    String
+  tenant      Tenant @relation(fields:[tenantId] , references:[id])
+  role        Role   @default(USER)
+  createdAt   DateTime @default(now())
+}
+
+enum Role{
+  ADMIN
+  STAFF
+  USER
+}
+
+model Customer{
+  id          String @id @default(uuid())
+  name        String
+  email       String?
+  phone       String?
+  tenantId    String 
+  bookings  Booking[]
+  invoices  Invoice[]
+  tenant      Tenant @relation(fields:[tenantId], references:[id])
+  createdAt   DateTime @default(now())
+
+}
+
+model Booking{
+  id           String @id @default(uuid())
+  customerId   String
+  customer     Customer @relation(fields:[customerId],references:[id])
+  date         DateTime
+  status       String
+  tenantId     String
+  tenant       Tenant @relation(fields:[tenantId],references:[id])
+  createdAt    DateTime @default(now())
+}
+
+model Invoice{
+  id           String @id @default(uuid())
+  amount       Float
+  status       String
+  customerId   String
+  customer     Customer @relation(fields:[customerId],references:[id])
+  tenantId     String
+  tenant       Tenant @relation(fields:[tenantId],references:[id])
+  createdAt    DateTime @default(now())
+}
+
+model Staff{
+  id           String @id @default(uuid())
+  name         String
+  role         String
+  tenantId     String 
+  tenant       Tenant @relation(fields:[tenantId],references:[id])
+  createdAt    DateTime @default(now())
+}
