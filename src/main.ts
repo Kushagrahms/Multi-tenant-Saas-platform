@@ -4,13 +4,18 @@ import express from "express";
 import cors from "cors";
 import authRoutes from "./auth/auth.routes";
 import { authMiddleware } from "./auth/auth.middleware";
+import customerRoutes from "./customers/customers.routes";
+import bookingRoutes from "./bookings/bookings.routes";
+import invoiceRoutes from "./invoice/invoice.routes";
 
 
 const app=express();
 app.use(cors());
 app.use(express.json());
 app.use("/api/auth",authRoutes);
-
+app.use("/api/customers",customerRoutes);
+app.use("/api/bookings",bookingRoutes);
+app.use("/api/invoices",invoiceRoutes);
 app.get("/api/test",authMiddleware,(req,res)=>{
     res.json((req as any).user);
 });
@@ -20,4 +25,3 @@ app.get("/",(req,res)=>{
 app.listen(5000,()=>{
     console.log("server running on http://localhost:5000");
 });
-console.log("JWT_SECRET:",process.env.JWT_SECRET);
