@@ -1,7 +1,8 @@
 import { prisma } from "../lib/prisma";
 
+
 export const createBookings = async (data:any,user:any)=>{
-    return prisma.booking.create({
+   return prisma.booking.create({
         data:{
             customerId:data.customerId,
             date:data.date,

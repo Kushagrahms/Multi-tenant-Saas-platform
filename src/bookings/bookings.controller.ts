@@ -7,7 +7,7 @@ export const create  =async (req:Request,res:Response)=>{
         const booking  =await createBookings(req.body,user);
         res.status(201).json(booking);
     }catch(err:any){
-        res.status(400).json({error:err.messsage});
+        res.status(400).json({error:err.message});
     }
 };
 

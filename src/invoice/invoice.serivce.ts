@@ -11,6 +11,11 @@ export const createInvoice = async (data:any,user:any)=>{
             tenant :{
                 connect:{id :user.tenantId},
             },
+            ...(data.bookingId &&{
+            booking : {
+                connect:{id: data.bookingId},
+            },
+         }),
         },
     });
 };
@@ -22,6 +27,7 @@ export const getInvoice = async (user:any)=>{
         },
         include:{
             customer:true,
+            booking:true,
         },
     });
 };

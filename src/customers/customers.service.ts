@@ -13,7 +13,7 @@ export const createCustomer = async (data:any,user:any)=>{
 export const getCustomers = async (user:any)=>{
     return prisma.customer.findMany({
         where:{
-            tenantId:user.tenantID,
+            tenantId:user.tenantId,
         },
     });
 };
