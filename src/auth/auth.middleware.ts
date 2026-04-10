@@ -17,8 +17,9 @@ export const authMiddleware = (
             return res.status(401).json({error: "invalud token"});
         }
         const decoded = jwt.verify(token,JWT_SECRET) as {
-            userID : string,
+            userId : string,
             tenantId: string,
+            role:string,
         };
 
         (req as any).user=decoded;

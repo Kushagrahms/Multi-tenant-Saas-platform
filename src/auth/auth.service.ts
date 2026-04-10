@@ -25,6 +25,7 @@ export const registerUser = async( data:{
             password:hashedPassword,
             name:data.name ?? null,
             tenantId:tenant.id,
+            role:"ADMIN",
         },
     });
     return {user, tenant};
@@ -48,6 +49,7 @@ export const loginUser = async( email:string,password:string)=>{
         {        
         userId: user.id,
         tenantId: user.tenantId,
+        role: user.role,
         },
         JWT_SECRET,{expiresIn:"1d"}
    );
