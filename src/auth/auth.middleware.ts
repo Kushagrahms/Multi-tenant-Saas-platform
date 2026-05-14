@@ -14,7 +14,7 @@ export const authMiddleware = (
         }
         const token = authHeader.split(" ")[1];
         if(!token){
-            return res.status(401).json({error: "invalud token"});
+            return res.status(401).json({error: "invalid token"});
         }
         const decoded = jwt.verify(token,JWT_SECRET) as {
             userId : string,
@@ -26,6 +26,6 @@ export const authMiddleware = (
 
         next();
     }catch(err){
-        return res.status(401).json({err:"Unauthorised"});
+        return res.status(401).json({error:"Unauthorized"});
     }
 };

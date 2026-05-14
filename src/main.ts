@@ -8,14 +8,16 @@ import customerRoutes from "./customers/customers.routes";
 import bookingRoutes from "./bookings/bookings.routes";
 import invoiceRoutes from "./invoice/invoice.routes";
 import userRoutes from "./users/users.routes";
+import { errorMiddleware } from "./middlewares/error.middleware";
+
 
 const app=express();
 app.use(cors());
 app.use(express.json());
 app.use("/api/auth",authRoutes);
-app.use("/api/customers",customerRoutes);
-app.use("/api/bookings",bookingRoutes);
-app.use("/api/invoices",invoiceRoutes);
+app.use("/api/customers",authMiddleware,customerRoutes);
+app.use("/api/bookings",authMiddleware,bookingRoutes);
+app.use("/api/invoices",authMiddleware,invoiceRoutes);
 app.use("/api/users",userRoutes);
 app.get("/api/test",authMiddleware,(req,res)=>{
     res.json((req as any).user);
@@ -23,6 +25,7 @@ app.get("/api/test",authMiddleware,(req,res)=>{
 app.get("/",(req,res)=>{
     res.send("backend running");
 });
+app.use(errorMiddleware);
 app.listen(5000,()=>{
     console.log("server running on http://localhost:5000");
 });

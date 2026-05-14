@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { prisma } from "../lib/prisma";
+import { ApiError } from "../../common/utils/ApiError";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
@@ -9,7 +10,15 @@ export const registerUser = async( data:{
     password: string;
     name?: string;
     tenantName: string;
-}) =>  {
+}) =>  {//checking if user exists
+    const existingUser = await prisma.user.findUnique({
+        where:{
+            email:data.email,
+        },
+    });
+    if(existingUser){
+        throw new ApiError(409,"User already exists");
+    }
     const hashedPassword = await bcrypt.hash(data.password,10);
 
     //creating tenant
@@ -28,7 +37,8 @@ export const registerUser = async( data:{
             role:"ADMIN",
         },
     });
-    return {user, tenant};
+    const {password, ...safeUser}=user;
+    return {user:safeUser, tenant,};
 };
 
 export const loginUser = async( email:string,password:string)=>{
@@ -38,12 +48,13 @@ export const loginUser = async( email:string,password:string)=>{
         },
     });
 
+
     if(!user){
-        throw new Error("User not found");
+        throw new ApiError(404,"User not found");
     }
     const isValid=await bcrypt.compare(password,user.password);
     if(!isValid){
-        throw new Error("invalid password");
+        throw new ApiError(401,"invalid password");
     }
     const token = jwt.sign(
         {        

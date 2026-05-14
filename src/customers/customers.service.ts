@@ -6,6 +6,7 @@ export const createCustomer = async (data:any,user:any)=>{
             email:data.email,
             phone:data.phone,
             tenantId:user.tenantId,
+            createdBy:user.userId,
         },
     });
 };

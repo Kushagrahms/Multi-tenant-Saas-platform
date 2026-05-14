@@ -1,22 +1,22 @@
-import {Response,Request} from "express";
+import {Response,Request,NextFunction} from "express";
 import {createBookings,getBookings} from "./bookings.service";  
 
-export const create  =async (req:Request,res:Response)=>{
+export const create  =async (req:Request,res:Response, next:NextFunction)=>{
     try{
         const user = (req as any).user;
         const booking  =await createBookings(req.body,user);
         res.status(201).json(booking);
-    }catch(err:any){
-        res.status(400).json({error:err.message});
+    }catch(err){
+        next(err);
     }
 };
 
-export const getAll = async (req:Request,res:Response)=>{
+export const getAll = async (req:Request,res:Response,next:NextFunction)=>{
     try{
         const user  =(req as any).user;
         const bookings = await getBookings(user);
         res.json(bookings);
-    }catch(err:any){
-        res.status(400).json({error:err.message});
+    }catch(err){
+        next(err);
     }
 };
