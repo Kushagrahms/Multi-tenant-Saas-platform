@@ -38,6 +38,13 @@ return (
       <button type="submit"  className="bg-orange-500 hover:bg-orange-600 text-white p-3 rounded-lg transition">
         Login
       </button>
+      <p className="text-center text-sm text-gray-600">
+        Don't have an Account?{" "}
+        <span onClick={()=>navigate("/register")}
+        className="text-orange-500 font-semibold cursor-pointer">
+          Register
+        </span>
+      </p>
     </form>
   </div>
 );
