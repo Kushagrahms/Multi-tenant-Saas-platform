@@ -4,7 +4,7 @@ export const createInvoiceSchema = z.object({
     amount:z.coerce.number().positive()
           .positive("amount must be a ositive number"),
 
-    customerID:z
+    customerId:z
           .string()
           .uuid("Invalid customer id"),
     bookingId:z

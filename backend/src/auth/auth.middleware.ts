@@ -2,6 +2,11 @@ import {Request, Response, NextFunction} from "express";
 import jwt from "jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
+type JWTPayLoad =  {
+  userId: string;
+  tenantId: string;
+  role: string;
+} ;
 export const authMiddleware = (
     req: Request,
     res:Response,
@@ -16,11 +21,7 @@ export const authMiddleware = (
         if(!token){
             return res.status(401).json({error: "invalid token"});
         }
-        const decoded = jwt.verify(token,JWT_SECRET) as {
-            userId : string,
-            tenantId: string,
-            role:string,
-        };
+        const decoded = jwt.verify(token,JWT_SECRET) as JWTPayLoad;
 
         (req as any).user=decoded;
 

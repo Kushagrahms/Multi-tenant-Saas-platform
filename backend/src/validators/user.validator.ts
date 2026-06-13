@@ -14,7 +14,7 @@ export const createStaffSchema = z.object({
          .min(2)
          .max(50),
     role:z
-         .enum(["Admin","Staff"])
+         .enum(["ADMIN","STAFF"])
          .optional(),
 
 });
