@@ -13,6 +13,9 @@ export const createCustomer = async(data:{
     const response = await api.post("/customers",data);
     return response.data;
 };
-
+export const deleteCustomer = async(id:string)=>{
+    const res = await api.delete(`/customers/${id}`);
+    return res.data;
+}
 
 

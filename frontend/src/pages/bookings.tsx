@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import {getCustomer} from "../api/customer";
-import {createBooking, getBookings} from "../api/bookings";
+import {createBooking, deleteBooking, getBookings} from "../api/bookings";
 
 interface Customer{
   id:string;
@@ -60,6 +60,16 @@ const BookingsPage = () => {
       console.log(error.response?.data);
     }
   };
+  const handleDeleteBooking = async(id:string)=>{
+    try{
+      await deleteBooking(id);
+      setBookings(prev=>
+        prev.filter(booking=>booking.id!==id)
+      );
+    }catch(error){
+      console.error(error);
+    }
+  };
 
   
   return (
@@ -84,8 +94,8 @@ const BookingsPage = () => {
           <select value={form.status} onChange={(e)=>setForm({...form,status:e.target.value})}
           className="border p-2 rounded">
             <option value="pending">Pending</option>
-            <option value="pending">Confirmed</option>       
-            <option value="pending">Completed</option>                 
+            <option value="confirmed">Confirmed</option>       
+            <option value="completed">Completed</option>                 
           </select>
         </div>
         <button type="submit" className="mt-4 px-4 py-2 bg-black text-white rounded">
@@ -104,6 +114,9 @@ const BookingsPage = () => {
               </th>
               <th className="text-left p-3">
                 Status
+              </th>
+              <th className="text-left p-3">
+                Actions 
               </th>
             </tr>
           </thead>
@@ -126,6 +139,13 @@ const BookingsPage = () => {
 
                 <td className="p-3">
                   {booking.status}
+                </td>
+                <td className="p-3">
+                  <button onClick={()=>
+                    handleDeleteBooking(booking.id)
+                  } className="bg-red-600 text-white px-3 py-1 rounded">
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))}

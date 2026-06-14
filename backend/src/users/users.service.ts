@@ -35,3 +35,18 @@ export const getStaff = async (user:any)=>{
         }
     });
 };
+
+export const deleteStaff = async(id:string,user:any)=>{
+    const staff = await prisma.user.findFirst({
+        where:{
+            id,
+            tenantId:user.tenantId,
+        }
+    });
+    if(!staff){
+        throw new ApiError(404,"Staff not found");
+    }
+    return prisma.user.delete({
+        where:{id}
+    });
+};

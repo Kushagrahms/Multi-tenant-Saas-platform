@@ -1,5 +1,5 @@
 import {useEffect,useState} from "react";
-import {createStaff, getStaff} from "../api/users";
+import {createStaff, getStaff, deleteStaff} from "../api/users";
 
 const StaffPage = () => {
   const [staff,setStaff] = useState<any[]>([]);
@@ -41,6 +41,15 @@ const StaffPage = () => {
       console.error(error);
     }
   };
+  const handleDeleteStaff = async(id:string)=>{
+    try{
+      await deleteStaff(id);
+      setStaff((prev)=>
+      prev.filter((member)=>member.id !== id));
+    }catch(error){
+      console.error(error);
+    }
+  };
 
 
   return (
@@ -68,6 +77,7 @@ const StaffPage = () => {
             <th className="p-2">Name</th>
             <th className="p-2">Email</th>
             <th className="p-2">Role</th>
+            <th className="p-2">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -76,6 +86,10 @@ const StaffPage = () => {
     <td className="p-2">{member.name}</td>
     <td className="p-2">{member.email}</td>
     <td className="p-2">{member.role}</td>
+    <td className="p-2">
+      <button onClick={()=>handleDeleteStaff(member.id)}
+      className="bg-red-600 text-white px-3 py-1 rounded">Delete</button>
+    </td>
   </tr>
 ))}
         </tbody>

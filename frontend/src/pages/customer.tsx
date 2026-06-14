@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import {createCustomer, getCustomer} from "../api/customer";
+import {createCustomer, getCustomer, deleteCustomer} from "../api/customer";
 
 interface Customer {
   id:string;
@@ -42,6 +42,18 @@ const CustomerPage = () => {
       console.error(error);
     }
   };
+  const handleDeleteCustomer = async(id:string)=>{
+    try{
+      await deleteCustomer(id);
+
+      setCustomers(prev=>
+        prev.filter(customer=>customer.id!==id)
+      );
+    }catch(error){
+      console.error(error);
+    }
+  };
+
   return (
     <div className="p-6">
       <h1  className="text-2xl font-bold mb-6">
@@ -66,6 +78,7 @@ const CustomerPage = () => {
             <tr className="border-b">
               <th className="text-left p-3">Name</th>
               <th className="text-left p-3">Email</th>
+              <th className="text-left p-3">Actions</th>
               <th className="text-left p-3">Phone</th>
             </tr>
           </thead>
@@ -74,6 +87,10 @@ const CustomerPage = () => {
               <tr key={customers.id} className="border-b">
                 <td className="p-3">{customers.name}</td>
                 <td className="p-3">{customers.email}</td>
+                  <td className="p-3">
+                  <button onClick={()=>handleDeleteCustomer(customers.id)}
+                  className="bg-red-600 text-white px-3 py-1 rounded">Delete</button>
+                </td>
                 <td className="p-3">{customers.phone}</td>
               </tr>
             ))}

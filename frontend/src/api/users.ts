@@ -14,3 +14,7 @@ export const createStaff = async(data:{
     const response = await api.post("/users",data);
     return response.data;
 };
+export const deleteStaff = async(id:string)=>{
+    const res=await api.delete(`/users/${id}`);
+    return res.data;
+};

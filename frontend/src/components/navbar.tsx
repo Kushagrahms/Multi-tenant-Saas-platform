@@ -10,9 +10,9 @@ const Navbar = () =>{
     };
     return (
         <header style = {{height:"77px",background:"#FFFFFF", borderBottom:"1px solid #eee", 
-            padding:"0 24px", display:"flex", alignItems:"center", justifyContent:"space-between",
+            padding:"0 24px", display:"flex", alignItems:"center", justifyContent:"flex-end",
         }}>
-            <h3>Dashboard</h3>
+           
             <button onClick={handleLogout} style = {{padding:"10px 16px", borderRadius:"10px", cursor:"pointer",}}>
                 Logout
             </button>
