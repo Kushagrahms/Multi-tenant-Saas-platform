@@ -39,3 +39,43 @@ export const getInvoice = async (user:any)=>{
         },
     });
 };
+
+export const deleteInvoice = async (invoiceId:string,user:any)=>{
+    const invoice = await prisma.invoice.findUnique({
+        where:{
+            id:invoiceId,
+        },
+    });
+    if(!invoice || invoice.tenantId!==user.tenantId){
+        throw new ApiError(404,"Invoice not found");
+    }
+    return prisma.invoice.delete({
+        where:{
+            id:invoiceId,
+        },
+    });
+};
+export const updateInvoice = async(
+    id:string,
+    data:any,
+    user:any,
+)=>{
+    const invoice = await prisma.invoice.findFirst({
+        where:{
+            id,
+            tenantId:user.tenantId,
+        },
+    });
+    if(!invoice){
+        throw new ApiError(404,"invoice not found");
+    }
+    return prisma.invoice.update({
+        where:{id},
+        data:{
+            customerId: data.customerId,
+            bookingId: data.bookingId || null,
+            amount: Number(data.amount),
+            status: data.status,
+        },
+    });
+};

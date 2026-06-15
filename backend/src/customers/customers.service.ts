@@ -35,6 +35,29 @@ export const deleteCustomer = async(
         where:{id},
     });
 };
+export const updateCustomer = async(
+    id:string,
+    data:any,
+    user:any
+)=>{
+    const customer = await prisma.customer.findFirst({
+        where:{
+            id,
+            tenantId:user.tenantId,
+        },
+    });
+    if(!customer){
+        throw new Error("Customer not found");
+    }
+    return prisma.customer.update({
+        where:{ id },
+        data:{
+            name:data.name,
+            email:data.email,
+            phone:data.phone,
+        },
+    });
+};
 
 
 

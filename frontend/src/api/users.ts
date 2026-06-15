@@ -18,3 +18,7 @@ export const deleteStaff = async(id:string)=>{
     const res=await api.delete(`/users/${id}`);
     return res.data;
 };
+export const updateStaff = async(id:String,data:any)=>{
+    const response = await api.put(`/users/${id}`,data);
+    return response.data;
+};

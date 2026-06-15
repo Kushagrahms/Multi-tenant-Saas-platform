@@ -1,5 +1,5 @@
 import { Request, Response,NextFunction} from "express";
-import { createStaff, getStaff, deleteStaff} from "./users.service";
+import { createStaff, getStaff, deleteStaff,updateStaff} from "./users.service";
 
 
 export const create = async(req:Request,res:Response,next:NextFunction)=>{
@@ -28,4 +28,16 @@ export const removeStaff = async(req:Request,res:Response,next:NextFunction)=>{
             next(err);
         }
     };
+export const editStaff = async(req:Request,res:Response,next:NextFunction)=>{
+    try{
+        const user = (req as any).user;
+        const staff = await updateStaff(
+            req.params.id as string,req.body,user
+        );
+        res.json(staff);
+    }catch(err){
+        next(err);
+    }
+};
+
 

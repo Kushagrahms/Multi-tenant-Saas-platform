@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import {createCustomer, getCustomer, deleteCustomer} from "../api/customer";
+import {createCustomer, getCustomer, deleteCustomer,updateCustomer} from "../api/customer";
 
 interface Customer {
   id:string;
@@ -15,6 +15,7 @@ const CustomerPage = () => {
     email:"",
     phone:"",
   });
+  const [editingId, setEditingId] = useState<string | null>(null);
   const fetchCustomer = async()=>{
     try{
       const data = await getCustomer();
@@ -31,7 +32,12 @@ const CustomerPage = () => {
   const handleSubmit = async(e:React.FormEvent<HTMLFormElement>)=>{
     e.preventDefault();
     try{
-      await createCustomer(form);
+      if(editingId){
+        await updateCustomer(editingId,form);
+        setEditingId(null);
+      }else{
+        await createCustomer(form);
+      }
       setForm({
         name:"",
         email:"",
@@ -42,6 +48,7 @@ const CustomerPage = () => {
       console.error(error);
     }
   };
+
   const handleDeleteCustomer = async(id:string)=>{
     try{
       await deleteCustomer(id);
@@ -53,6 +60,15 @@ const CustomerPage = () => {
       console.error(error);
     }
   };
+  const handleEditCustomer = async(customer:Customer)=>{
+    setEditingId(customer.id);
+    setForm({
+      name:customer.name,
+      email:customer.email,
+      phone:customer.phone,
+    });
+  };
+
 
   return (
     <div className="p-6">
@@ -70,7 +86,8 @@ const CustomerPage = () => {
           <input type="text" placeholder="Phone" value={form.phone} onChange={(e)=>setForm({...form, phone:e.target.value})}
           className="border p-2 rounded" />
         </div>
-        <button type="submit" className="mt-4 px-4 py-2 bg-black text-white rounded">Add Customer</button>
+        <button type="submit" className="mt-4 px-4 py-2 bg-black text-white rounded">
+          {editingId?"Update Customer":"Add Customer"}</button>
       </form>
       <div className="bg-white rounded shadow">
         <table className="w-full">
@@ -87,9 +104,11 @@ const CustomerPage = () => {
               <tr key={customers.id} className="border-b">
                 <td className="p-3">{customers.name}</td>
                 <td className="p-3">{customers.email}</td>
-                  <td className="p-3">
-                  <button onClick={()=>handleDeleteCustomer(customers.id)}
-                  className="bg-red-600 text-white px-3 py-1 rounded">Delete</button>
+                  <td className="p-3 flex gap-2">
+                    <button onClick={()=>handleEditCustomer(customers)}
+                      className="bg-blue-600 text-white px-3 py-1 rounded">Edit</button>                    
+                   <button onClick={()=>handleDeleteCustomer(customers.id)}
+                   className="bg-red-600 text-white px-3 py-1 rounded">Delete</button>
                 </td>
                 <td className="p-3">{customers.phone}</td>
               </tr>

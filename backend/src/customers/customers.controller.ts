@@ -1,4 +1,4 @@
-import { createCustomer, getCustomers, deleteCustomer  } from "./customers.service";
+import { createCustomer, getCustomers, deleteCustomer, updateCustomer  } from "./customers.service";
 import { Request, Response, NextFunction } from "express";
 
 export const create = async (req:Request, res:Response,next:NextFunction)=>{
@@ -31,3 +31,15 @@ export const removeCustomer = async(req:Request , res:Response, next:NextFunctio
     }
 
 };
+export const editCustomer = async(req:Request, res:Response, next:NextFunction)=>{
+    try{
+        const user = (req as any).user;
+        const customer = await updateCustomer(
+            req.params.id as string, req.body,user
+        );
+        res.json(customer);
+    }catch(err){
+        next(err);
+    }
+};
+

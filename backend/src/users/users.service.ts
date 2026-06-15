@@ -50,3 +50,32 @@ export const deleteStaff = async(id:string,user:any)=>{
         where:{id}
     });
 };
+export const updateStaff = async(
+    id:string,
+    data:any,
+    user:any
+)=>{
+    const staff = await prisma.user.findFirst({
+        where:{
+        id,
+        tenantId:user.tenantId,
+        },
+    });
+    if(!staff){
+        throw new ApiError(404,"Staff not found");
+    }
+    return prisma.user.update({
+        where:{id},
+        data:{
+            name:data.name,
+            email:data.email,
+            role:data.role,
+        },
+        select:{
+            id:true,
+            name:true,
+            email:true,
+            role:true,
+        },
+    });
+};

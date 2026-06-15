@@ -14,3 +14,11 @@ export const createInvoice = async(data:{
     const response = await api.post("/invoices",data);
     return response.data;
 };
+export const deleteInvoice = async(id:String)=>{
+    const response = await api.delete(`/invoices/${id}`);
+    return response.data;
+};
+export const updateInvoice = async(id:String,data:any)=>{
+    const response = await api.put(`/invoices/${id}`,data);
+    return response.data;
+};

@@ -1,5 +1,5 @@
 import {useEffect,useState} from "react";
-import {createStaff, getStaff, deleteStaff} from "../api/users";
+import {createStaff, getStaff, deleteStaff,updateStaff} from "../api/users";
 
 const StaffPage = () => {
   const [staff,setStaff] = useState<any[]>([]);
@@ -7,6 +7,7 @@ const StaffPage = () => {
   const [email, setEmail] = useState("");
   const [password,setPassword] = useState("");
   const [role,setRole] = useState("STAFF");
+  const [editingId,setEditingId] = useState<string |null>(null);
 
   const fetchStaff=async()=>{
     try{
@@ -25,12 +26,19 @@ const StaffPage = () => {
     e.preventDefault();
 
     try{
-      await createStaff({
+      if(editingId){
+        await updateStaff(editingId,{
+          name,email,role,
+        });
+        setEditingId(null);
+      }else{
+     await createStaff({
         name,
         email,
         password,
         role,
       });
+      }
       setName("");
       setEmail("");
       setPassword("");
@@ -50,6 +58,13 @@ const StaffPage = () => {
       console.error(error);
     }
   };
+  const handleUpdateStaff = async(member:any)=>{
+    setEditingId(member.id);
+    setName(member.name);
+    setEmail(member.email);
+    setRole(member.role);
+    setPassword("");
+  };
 
 
   return (
@@ -58,16 +73,16 @@ const StaffPage = () => {
       <form onSubmit={handleCreateStaff} className="space-y-4 border p-4 rounded-lg mb-8">
         <input type="text" placeholder="Name" value={name} onChange={(e)=>setName(e.target.value)}
         className="border p-2 w-full" required />
-        <input type="email" placeholder={email} onChange={(e)=>setEmail(e.target.value)}
+        <input type="email" value={email} placeholder="email" onChange={(e)=>setEmail(e.target.value)}
         className="border p-2 w-full" required />
-        <input type="password" placeholder="password" onChange={(e)=>setPassword(e.target.value)}
-        className="border p-2 w-full" required />
+        <input type="password" value={password} placeholder="password" onChange={(e)=>setPassword(e.target.value)}
+        className="border p-2 w-full" required={!editingId} />
         <select value={role} onChange={(e)=>setRole(e.target.value)} className="border p-2 w-full">
           <option value="STAFF">Staff</option>
           <option value="ADMIN">Admin</option>
         </select>
         <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
-        Add staff
+        {editingId?"Update Staff":"Add Staff"}
         </button>
       </form>
 
@@ -86,7 +101,9 @@ const StaffPage = () => {
     <td className="p-2">{member.name}</td>
     <td className="p-2">{member.email}</td>
     <td className="p-2">{member.role}</td>
-    <td className="p-2">
+    <td className="p-2 flex gap-2">
+      <button onClick={()=>handleUpdateStaff(member)}
+      className="bg-blue-600 text-white px-3 py-1 rounded">Edit</button>
       <button onClick={()=>handleDeleteStaff(member.id)}
       className="bg-red-600 text-white px-3 py-1 rounded">Delete</button>
     </td>

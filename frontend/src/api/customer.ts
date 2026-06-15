@@ -16,6 +16,10 @@ export const createCustomer = async(data:{
 export const deleteCustomer = async(id:string)=>{
     const res = await api.delete(`/customers/${id}`);
     return res.data;
-}
+};
 
+export const updateCustomer = async(id:String,data:any)=>{
+    const response = await api.put(`/customers/${id}`,data);
+    return response.data;
+};
 

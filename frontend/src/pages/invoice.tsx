@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {getInvoice, createInvoice} from "../api/invoice";
+import {getInvoice, createInvoice,deleteInvoice,updateInvoice} from "../api/invoice";
 import { getCustomer } from "../api/customer";
 import { getBookings } from "../api/bookings";
 
@@ -7,6 +7,7 @@ const InvoicePage = () => {
   const [invoice,setInvoice] = useState<any[]>([]);
   const [customers,setCustomers] = useState<any[]>([]);
   const [bookings,setBookings]  =useState<any[]>([]);
+  const [editingId,setEditingId] = useState<string |null>(null);
 
   const [customerId,setCustomerId] = useState("");
   const [bookingId,setBookingId] = useState("");
@@ -37,25 +38,46 @@ const InvoicePage = () => {
     e.preventDefault();
 
     try{
-      await createInvoice({
-        customerId,
-        bookingId:bookingId,
-        amount:Number(amount),
-        status,
-      });
-
+      const payload = {
+        customerId,bookingId,amount:Number(amount),status,
+      };
+      if(editingId){
+        await updateInvoice(editingId,payload);
+        setEditingId(null);
+      }else{
+      await createInvoice(payload);
+    }
       setCustomerId("");
       setBookingId("");
       setAmount("");
       setStatus("unpaid");
 
       fetchData();
+    }catch(error:any){
+        console.log(error.response?.data);
+        console.log(error.response?.status);
+        console.error(error);
+    }
+  };
+  const handleDeleteInvoice = async(
+    id:String
+  )=>{
+    try{
+      await deleteInvoice(id);
+
+      setInvoice((prev)=>
+      prev.filter((inv)=>inv.id!==id));
     }catch(error){
       console.error(error);
     }
   };
-  
-
+  const handleUpdateInvoice = (invoice:any)=>{
+    setEditingId(invoice.id);
+    setCustomerId(invoice.customerId);
+    setBookingId(invoice.bookingId || "");
+    setAmount(String(invoice.amount));
+    setStatus(invoice.status);
+  }
 
   return(
     <div className="p-6">
@@ -84,7 +106,8 @@ const InvoicePage = () => {
             <option value="unpaid">Unpaid</option>
             <option value="paid">Paid</option>
           </select>
-          <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">Create Invoice</button>
+          <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
+            {editingId?"Update Invoice":"Create Invoice"}</button>
          </form>
 
          <table className="w-full border">
@@ -95,6 +118,7 @@ const InvoicePage = () => {
               <th className="p-2">Amount</th>
               <th className="p-2">Status</th>
               <th className="p-2">Created</th>
+              <th className="p-2">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -105,6 +129,12 @@ const InvoicePage = () => {
                 <td className="p-2">₹{invoice.amount}</td>
                 <td className="p-2">{invoice.status}</td>
                 <td className="p-2">{new Date(invoice.createdAt).toLocaleDateString()}</td>
+                <td className="p-2 flex gap-2">
+                  <button  type="button" onClick={()=>handleUpdateInvoice(invoice)}
+                  className="bg-blue-600 text-white px-3 py-1 rounded">Edit</button>
+                  <button type="button" onClick={()=>handleDeleteInvoice(invoice.id)} 
+                  className="bg-red-500 text-white px-3 py-1 rounded">Delete</button>
+                </td>
               </tr>
             ))}
           </tbody>

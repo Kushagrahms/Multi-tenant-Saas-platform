@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import {getCustomer} from "../api/customer";
-import {createBooking, deleteBooking, getBookings} from "../api/bookings";
+import {createBooking, deleteBooking, getBookings, updateBooking} from "../api/bookings";
 
 interface Customer{
   id:string;
@@ -19,6 +19,7 @@ interface Booking{
 const BookingsPage = () => {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [editingId,setEditingId] = useState<string |null>(null);
 
   const [form,setForm]=useState({
     customerId:"",
@@ -49,7 +50,15 @@ const BookingsPage = () => {
   const handleSubmit = async(e:React.FormEvent<HTMLFormElement>)=>{
     e.preventDefault();
     try{
-      await createBooking({...form,date:new Date(form.date).toISOString(),});
+      const payload={
+        ...form, date:new Date(form.date).toISOString(),
+      };
+      if(editingId){
+        await updateBooking(editingId,payload);
+        setEditingId(null);
+      }else{
+      await createBooking(payload);
+      }
       setForm({
         customerId:"",
         date:"",
@@ -69,6 +78,14 @@ const BookingsPage = () => {
     }catch(error){
       console.error(error);
     }
+  };
+  const handleEditBooking = async(booking:Booking)=>{
+    setEditingId(booking.id);
+    setForm({
+      customerId:booking.customer.id,
+      date:booking.date.slice(0,16),
+      status:booking.status,
+    });
   };
 
   
@@ -99,7 +116,7 @@ const BookingsPage = () => {
           </select>
         </div>
         <button type="submit" className="mt-4 px-4 py-2 bg-black text-white rounded">
-          Create Booking
+          {editingId?"Update Booking":"Create Booking"}
         </button>
       </form>
         <div className="bg-white rounded shadow">
@@ -140,7 +157,9 @@ const BookingsPage = () => {
                 <td className="p-3">
                   {booking.status}
                 </td>
-                <td className="p-3">
+                <td className="p-3 flex gap-2">
+                  <button onClick={()=>handleEditBooking(booking)}
+                  className="bg-blue-600 text-white px-3 py-1 rounded">Edit</button>
                   <button onClick={()=>
                     handleDeleteBooking(booking.id)
                   } className="bg-red-600 text-white px-3 py-1 rounded">

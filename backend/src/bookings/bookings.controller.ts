@@ -1,5 +1,5 @@
 import {Response,Request,NextFunction} from "express";
-import {createBookings,getBookings, deleteBooking} from "./bookings.service";  
+import {createBookings,getBookings, deleteBooking, updateBooking} from "./bookings.service";  
 
 export const create  =async (req:Request,res:Response, next:NextFunction)=>{
     try{
@@ -35,3 +35,15 @@ export const removeBooking = async(req:Request, res:Response, next:NextFunction)
         next(err);
     }
 };
+export const editBooking = async(req:Request,res:Response,next:NextFunction)=>{
+    try{
+        const user = (req as any).user;
+        const booking = await updateBooking(
+            req.params.id as string,req.body, user
+        );
+        res.json(booking);
+    }catch(err){
+        next(err);
+    }
+};
+

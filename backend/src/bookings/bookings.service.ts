@@ -49,3 +49,26 @@ export const deleteBooking = async(
     });
 };
 
+export const updateBooking = async(
+    id:string,
+    data:any,
+    user:any
+)=>{
+    const booking = await prisma.booking.findFirst({
+        where:{
+            id,
+            tenantId:user.tenantId,
+        }
+    });
+    if(!booking){
+        throw new ApiError(404,"Booking not found");
+    }
+    return prisma.booking.update({
+        where:{id},
+        data:{
+            customerId:data.customerId,
+            date:data.date,
+            status:data.status,
+        },
+    });
+};
