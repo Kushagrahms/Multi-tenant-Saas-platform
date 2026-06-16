@@ -10,7 +10,7 @@ import invoiceRoutes from "./invoice/invoice.routes";
 import userRoutes from "./users/users.routes";
 import { errorMiddleware } from "./middlewares/error.middleware";
 import dashboardRoutes from "./dashboard/dashboard.route";
-
+import expenseRoutes from "./expenses/expense.routes";
 const app=express();
 app.use(cors());
 app.use(express.json());
@@ -20,6 +20,7 @@ app.use("/api/bookings",authMiddleware,bookingRoutes);
 app.use("/api/invoices",authMiddleware,invoiceRoutes);
 app.use("/api/users",userRoutes);
 app.use("/api/dashboard",dashboardRoutes);
+app.use("/api/expenses",authMiddleware,expenseRoutes);
 app.get("/api/test",authMiddleware,(req,res)=>{
     res.json((req as any).user);
 });

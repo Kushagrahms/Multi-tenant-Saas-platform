@@ -10,6 +10,7 @@ export const createStaff = async(data:{
     email:string;
     password:string;
     role:string;
+    salary:number;
 })=>{
     const response = await api.post("/users",data);
     return response.data;

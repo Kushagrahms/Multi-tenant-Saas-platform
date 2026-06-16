@@ -8,6 +8,7 @@ const StaffPage = () => {
   const [password,setPassword] = useState("");
   const [role,setRole] = useState("STAFF");
   const [editingId,setEditingId] = useState<string |null>(null);
+  const [salary,setSalary] = useState("");
 
   const fetchStaff=async()=>{
     try{
@@ -28,7 +29,7 @@ const StaffPage = () => {
     try{
       if(editingId){
         await updateStaff(editingId,{
-          name,email,role,
+          name,email,role,salary:Number(salary),
         });
         setEditingId(null);
       }else{
@@ -37,12 +38,14 @@ const StaffPage = () => {
         email,
         password,
         role,
+        salary:Number(salary),
       });
       }
       setName("");
       setEmail("");
       setPassword("");
       setRole("STAFF");
+      setSalary("");
 
       fetchStaff();
     }catch(error){
@@ -64,6 +67,7 @@ const StaffPage = () => {
     setEmail(member.email);
     setRole(member.role);
     setPassword("");
+    setSalary(member.salary?.toString() || "");
   };
 
 
@@ -81,6 +85,8 @@ const StaffPage = () => {
           <option value="STAFF">Staff</option>
           <option value="ADMIN">Admin</option>
         </select>
+        <input type="number" placeholder="Salary" value={salary} onChange={(e)=>setSalary(e.target.value)}
+        className="border p-2 w-full" />
         <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
         {editingId?"Update Staff":"Add Staff"}
         </button>
@@ -92,6 +98,7 @@ const StaffPage = () => {
             <th className="p-2">Name</th>
             <th className="p-2">Email</th>
             <th className="p-2">Role</th>
+            <th className="p-2">Salary</th>
             <th className="p-2">Actions</th>
           </tr>
         </thead>
@@ -101,6 +108,7 @@ const StaffPage = () => {
     <td className="p-2">{member.name}</td>
     <td className="p-2">{member.email}</td>
     <td className="p-2">{member.role}</td>
+    <td className="p-2">₹{member.salary}</td>
     <td className="p-2 flex gap-2">
       <button onClick={()=>handleUpdateStaff(member)}
       className="bg-blue-600 text-white px-3 py-1 rounded">Edit</button>

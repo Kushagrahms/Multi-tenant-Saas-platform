@@ -111,8 +111,10 @@ const BookingsPage = () => {
           <select value={form.status} onChange={(e)=>setForm({...form,status:e.target.value})}
           className="border p-2 rounded">
             <option value="pending">Pending</option>
-            <option value="confirmed">Confirmed</option>       
-            <option value="completed">Completed</option>                 
+            <option value="confirmed">Confirmed</option> 
+            <option value="in_progress">In Progress</option>      
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>                 
           </select>
         </div>
         <button type="submit" className="mt-4 px-4 py-2 bg-black text-white rounded">
@@ -155,7 +157,7 @@ const BookingsPage = () => {
                 </td>
 
                 <td className="p-3">
-                  {booking.status}
+                  {booking.status.replace("_"," ")}
                 </td>
                 <td className="p-3 flex gap-2">
                   <button onClick={()=>handleEditBooking(booking)}

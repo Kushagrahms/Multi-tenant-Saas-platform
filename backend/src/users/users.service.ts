@@ -19,6 +19,7 @@ export const createStaff = async (data:any, user:any)=>{
             name:data.name,
             tenantId:user.tenantId,
             role:data.role || "STAFF",
+            salary:Number(data.salary) || 0,
         },
     });
 };
@@ -31,7 +32,8 @@ export const getStaff = async (user:any)=>{
             id:true,
             name:true,
             email:true,
-            role:true
+            role:true,
+            salary:true
         }
     });
 };
@@ -70,12 +72,14 @@ export const updateStaff = async(
             name:data.name,
             email:data.email,
             role:data.role,
+            salary:Number(data.salary) || 0,
         },
         select:{
             id:true,
             name:true,
             email:true,
             role:true,
+            salary:true,
         },
     });
 };
