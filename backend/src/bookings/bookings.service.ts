@@ -9,15 +9,36 @@ export const createBookings = async (data:any,user:any)=>{
 if(!customer || customer.tenantId !== user.tenantId){
     throw new ApiError(400,"Invalid customer for this tenant");
 }
-   return prisma.booking.create({
+   const service = await prisma.service.findUnique({
+    where:{id:data.serviceId}
+   });
+   if(!service || service.tenantId!==user.tenantId){
+    throw new ApiError(400,"Invaid service for this tenant");
+   }
+   const booking = await prisma.booking.create({
         data:{
             customerId:data.customerId,
+            serviceId:data.serviceId,
             date:data.date,
             status:data.status || "pending",
             tenantId:user.tenantId,
             createdBy:user.userId,
         },
     });
+    console.log("BOOKING CREATED:", booking.id);
+    await prisma.invoice.create({
+        data:{
+            amount:service.price,
+            status:"unpaid",
+            customerId:data.customerId,
+            bookingId:booking.id,
+            tenantId:user.tenantId,
+            createdBy:user.userId,
+        },
+    });
+    console.log("INVOICE CREATED");
+
+    return booking;
 };
 
 export const getBookings = async (user:any)=>{
@@ -27,6 +48,7 @@ export const getBookings = async (user:any)=>{
         },
         include:{
             customer:true,
+            service:true,
         },
     });
 };
@@ -63,12 +85,26 @@ export const updateBooking = async(
     if(!booking){
         throw new ApiError(404,"Booking not found");
     }
-    return prisma.booking.update({
+    const updatebooking = await prisma.booking.update({
         where:{id},
         data:{
             customerId:data.customerId,
+            serviceId:data.serviceId,
             date:data.date,
             status:data.status,
         },
     });
+    if(data.status === "completed"){
+        await prisma.invoice.updateMany({
+            where:{
+                bookingId:id,
+                tenantId:user.tenantId,
+            },
+            data:{
+                status:"paid",
+            },
+        });
+    }
+
+    return updatebooking;
 };

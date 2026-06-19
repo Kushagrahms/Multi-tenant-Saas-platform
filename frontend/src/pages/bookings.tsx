@@ -1,10 +1,16 @@
 import {useEffect, useState} from "react";
 import {getCustomer} from "../api/customer";
 import {createBooking, deleteBooking, getBookings, updateBooking} from "../api/bookings";
+import { getServices } from "../api/service";
 
 interface Customer{
   id:string;
   name:string;
+}
+interface Service{
+  id:string;
+  name:string;
+  price:number;
 }
 interface Booking{
   id:string;
@@ -14,15 +20,22 @@ interface Booking{
     id:string;
     name:string;
   };
+  service:{
+    id:string;
+    name:string;
+    price:number;
+  };
 }
 
 const BookingsPage = () => {
   const [customers, setCustomers] = useState<Customer[]>([]);
+  const [services, setServices] = useState<Service[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [editingId,setEditingId] = useState<string |null>(null);
 
   const [form,setForm]=useState({
     customerId:"",
+    serviceId:"",
     date:"",
     status:"pending",
   });
@@ -34,6 +47,17 @@ const BookingsPage = () => {
       console.error(error);
     }
   };
+  const fetchService = async()=>{
+    try{
+      const data = await getServices();
+      setServices(
+        data.filter(
+          (service:any)=>service.status==="ACTIVE"
+        ));
+    }catch(error){
+      console.error(error);
+    }
+  }
   const fetchBooking =  async()=>{
     try{
       const data = await getBookings();
@@ -44,6 +68,7 @@ const BookingsPage = () => {
   };
   useEffect(()=>{
     fetchCustomer();
+    fetchService();
     fetchBooking();
   },[]);
 
@@ -61,6 +86,7 @@ const BookingsPage = () => {
       }
       setForm({
         customerId:"",
+        serviceId:"",
         date:"",
         status:"pending",
       });
@@ -83,6 +109,7 @@ const BookingsPage = () => {
     setEditingId(booking.id);
     setForm({
       customerId:booking.customer.id,
+      serviceId:booking.service?.id || "",
       date:booking.date.slice(0,16),
       status:booking.status,
     });
@@ -95,7 +122,7 @@ const BookingsPage = () => {
         Bookings
       </h1>
       <form onSubmit={handleSubmit} className="bg-white p-4 rounded shadow mb-6">
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-4 gap-4">
           <select value={form.customerId} onChange={(e)=>setForm({...form,customerId:e.target.value,})}
           className="border p-2 rounded" required>
             <option value="">Select Customer</option>
@@ -104,6 +131,13 @@ const BookingsPage = () => {
               key={customer.id}
               value={customer.id}>
               {customer.name}</option>
+            ))}
+          </select>
+          <select value={form.serviceId} onChange={(e)=>setForm({...form,serviceId:e.target.value})}
+          className="border p-2 rounded" required>
+            <option value="">Select Service</option>
+            {services.map((service)=>(
+              <option key={service.id} value={service.id}>{service.name}-₹{service.price}</option>
             ))}
           </select>
           <input type="datetime-local" value={form.date} onChange={(e)=>setForm({...form, date:e.target.value})}
@@ -129,6 +163,12 @@ const BookingsPage = () => {
                 Customer
               </th>
               <th className="text-left p-3">
+                Service
+              </th>              
+              <th className="text-left p-3">
+                Price
+              </th>
+              <th className="text-left p-3">
                 Date
               </th>
               <th className="text-left p-3">
@@ -148,6 +188,14 @@ const BookingsPage = () => {
               >
                 <td className="p-3">
                   {booking.customer?.name}
+                </td>
+
+                <td className="p-3">
+                  {booking.service?.name || "-"}
+                </td>
+
+                <td className="p-3">
+                   ₹{booking.service?.price || 0}
                 </td>
 
                 <td className="p-3">

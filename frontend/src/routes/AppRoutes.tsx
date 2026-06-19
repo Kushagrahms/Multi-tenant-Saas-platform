@@ -6,6 +6,7 @@ import CustomerPage from "../pages/customer";
 import BookingsPage from "../pages/bookings";
 import InvoicePage from "../pages/invoice";
 import StaffPage from "../pages/staffpage";
+import ServicePage from "../pages/services";
 
 import ProtectedRoute from "./ProtectedRoutes";
 import DashboardLayout from "../layouts/dahsboardLayouts";
@@ -26,6 +27,7 @@ const AppRoutes = () =>{
             <Route path="/bookings" element={<BookingsPage />} />
             <Route path="/invoices" element={<InvoicePage />} />
             <Route path="/staff" element={<StaffPage />} />
+            <Route path="/services" element={<ServicePage />} />
           </Route>
         </Routes>
     );

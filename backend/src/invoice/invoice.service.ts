@@ -35,7 +35,11 @@ export const getInvoice = async (user:any)=>{
         },
         include:{
             customer:true,
-            booking:true,
+            booking:{
+                include:{
+                    service:true,
+                }
+            },
         },
     });
 };

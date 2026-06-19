@@ -7,6 +7,7 @@ export const getBookings  = async()=>{
 
 export const createBooking = async(data:{
     customerId:string,
+    serviceId:string,
     date:string,
     status:string,
 })=>{

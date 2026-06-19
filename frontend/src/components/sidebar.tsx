@@ -6,6 +6,7 @@ const Sidebar = () =>{
         { name : "Bookings", path: "/bookings"},
         { name : "Invoice", path: "/invoices"},
         { name : "Staff", path: "/staff"},
+        {name  : "Services", path:"/services"}
     ];
     return (
         <aside style = {{width:"240px",background:"#FFF1E6",minHeight:"100vh",padding:"24px",borderRight:"1px solid #f3d8c4",}}>
