@@ -19,7 +19,17 @@ export const getDashboardStats = async (tenantId: string) =>{
             status:{
                 in:["pending","confirmed","in_progress"]
             }}});
-    const totalInvoices = await prisma.invoice.count({where:{tenantId}});
+    const latestCustomers = await prisma.customer.findMany({
+        where:{tenantId},
+        take:5,
+        orderBy:{createdAt:"desc",},
+    });
+    const latestBookings = await prisma.booking.findMany({
+        where:{tenantId},
+        take:5,
+        orderBy:{createdAt:"desc",},
+        include:{customer:true,service:true,},
+    });
     const revenueResult = await prisma.invoice.aggregate({
         where:{
             tenantId,
@@ -65,6 +75,6 @@ export const getDashboardStats = async (tenantId: string) =>{
     const netProfit = revenue-totalExpenses;
 
     return{
-        totalCustomers, totalBookings,totalInvoices, revenue, salaryCost,expenseBreakDown, otherExpenses,totalExpenses,netProfit
+        totalCustomers, totalBookings, latestCustomers,latestBookings, revenue, salaryCost,expenseBreakDown, otherExpenses,totalExpenses,netProfit
    };
 };
