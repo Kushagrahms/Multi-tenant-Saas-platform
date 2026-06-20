@@ -9,6 +9,7 @@ const StaffPage = () => {
   const [role,setRole] = useState("STAFF");
   const [editingId,setEditingId] = useState<string |null>(null);
   const [salary,setSalary] = useState("");
+  const [searchTerm,setSearchTerm] = useState("");
 
   const fetchStaff=async()=>{
     try{
@@ -69,11 +70,19 @@ const StaffPage = () => {
     setPassword("");
     setSalary(member.salary?.toString() || "");
   };
-
+  const filteredStaff = staff.filter((member)=>
+  member.name.toLowerCase().includes(searchTerm.toLowerCase())||
+  member.role.toLowerCase().includes(searchTerm.toLowerCase())||
+  member.email.toLowerCase().includes(searchTerm.toLowerCase())
+)
 
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-6">Satff</h1>
+      <div className="mb-4">
+       <input type="text" placeholder="Search by name, role or email..."
+        value={searchTerm} onChange={(e)=>setSearchTerm(e.target.value)} className="border p-2 w-full rounded"/>
+      </div>
       <form onSubmit={handleCreateStaff} className="space-y-4 border p-4 rounded-lg mb-8">
         <input type="text" placeholder="Name" value={name} onChange={(e)=>setName(e.target.value)}
         className="border p-2 w-full" required />
@@ -103,7 +112,7 @@ const StaffPage = () => {
           </tr>
         </thead>
         <tbody>
-        {staff.map((member) => (
+        {filteredStaff.map((member) => (
   <tr key={member.id} className="border-b">
     <td className="p-2">{member.name}</td>
     <td className="p-2">{member.email}</td>

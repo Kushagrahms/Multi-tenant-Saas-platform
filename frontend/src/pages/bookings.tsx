@@ -32,6 +32,8 @@ const BookingsPage = () => {
   const [services, setServices] = useState<Service[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [editingId,setEditingId] = useState<string |null>(null);
+  const [searchTerm,setSearchTerm] = useState("");
+  const [statusFilter,setStatusFilter] = useState("all");
 
   const [form,setForm]=useState({
     customerId:"",
@@ -114,6 +116,15 @@ const BookingsPage = () => {
       status:booking.status,
     });
   };
+  const filteredBookings = bookings.filter((booking)=>{
+    const matchsSearch = booking.customer?.name
+                                          .toLowerCase()
+                                          .includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === "all" ||
+    booking.status === statusFilter;
+
+    return matchesStatus && matchsSearch;
+  })
 
   
   return (
@@ -121,6 +132,19 @@ const BookingsPage = () => {
       <h1 className="text-2xl font-bold mb-6">
         Bookings
       </h1>
+      <div className="flex gap-4 mb-4">
+        <input type="text" placeholder="Search customer.." value={searchTerm} 
+        onChange={(e)=>setSearchTerm(e.target.value)} className="border p-2 rounded flex-1" />
+        <select value={statusFilter} onChange={(e)=>setStatusFilter(e.target.value)}
+        className="border p-2 rounded">
+          <option value="all">All</option>
+          <option value="pending">Pending</option>
+          <option value="confirmed">Confirmed</option>
+          <option value="in_progress">In Progress</option>
+          <option value="completed">Completed</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </div>
       <form onSubmit={handleSubmit} className="bg-white p-4 rounded shadow mb-6">
         <div className="grid grid-cols-4 gap-4">
           <select value={form.customerId} onChange={(e)=>setForm({...form,customerId:e.target.value,})}
@@ -181,7 +205,7 @@ const BookingsPage = () => {
           </thead>
 
           <tbody>
-            {bookings.map((booking) => (
+            {filteredBookings.map((booking) => (
               <tr
                 key={booking.id}
                 className="border-b"

@@ -4,7 +4,7 @@ import {getInvoice,deleteInvoice} from "../api/invoice";
 
 const InvoicePage = () => {
   const [invoice,setInvoice] = useState<any[]>([]);
-
+  const [searchTerm,setSearchTerm] = useState("");
 
   const fetchData = async()=>{
     try{
@@ -32,12 +32,27 @@ const InvoicePage = () => {
       console.error(error);
     }
   };
+  const filteredInvoices = invoice.filter((inv)=>
+  inv.customer?.name
+    ?.toLowerCase()
+    .includes(searchTerm.toLowerCase()) ||
+
+  inv.booking?.service?.name
+    ?.toLowerCase()
+    .includes(searchTerm.toLowerCase()) ||
+
+  inv.status
+    ?.toLowerCase()
+    .includes(searchTerm.toLowerCase())
+);
 
   return(
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-6">Invoices</h1>
-
-
+        <div className="mb-4">
+         <input type="text" placeholder="Search customer, service or status..." value={searchTerm}
+         onChange={(e)=>setSearchTerm(e.target.value)} className="w-full border p-2 rounded" />
+        </div>
          <table className="w-full border">
           <thead>
             <tr className="border-b">
@@ -50,7 +65,7 @@ const InvoicePage = () => {
             </tr>
           </thead>
           <tbody>
-            {invoice.map((invoice)=>(
+            {filteredInvoices.map((invoice)=>(
               <tr key={invoice.id} className="border-b">
                 <td className="p-2">{invoice.customer?.name}</td>
                 <td className="p-2">{invoice.booking?.service?.name || "-"}</td>

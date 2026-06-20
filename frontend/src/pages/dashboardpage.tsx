@@ -2,11 +2,13 @@ import {useEffect, useState} from "react";
 import StatCard from "../components/statcard";
 import {getDashboardStats} from "../api/dashboard";
 import { createExpense , getExpenses , updateExpense, deleteExpense} from "../api/expense";
+import { formatDistanceToNow } from "date-fns";
 
 type DashboardStats = {
   totalCustomers:number;
   totalBookings:number;
-  totalInvoices:number;
+  latestCustomers:any[];
+  latestBookings:any[];
   revenue:number;
   salaryCost:number;
   expenseBreakDown:Record<string,number>;
@@ -19,7 +21,8 @@ const DashboardPage = () => {
   const [stats, setStats] = useState<DashboardStats>({
     totalCustomers:0,
     totalBookings:0,
-    totalInvoices:0,
+    latestCustomers:[],
+    latestBookings:[],  
     revenue:0,
     salaryCost:0,
     expenseBreakDown:{},
@@ -102,6 +105,13 @@ const DashboardPage = () => {
       console.error(error);
     }
   };
+  const statusStyles: Record<string, string> = {
+  pending: "bg-yellow-100 text-yellow-800",
+  confirmed: "bg-green-100 text-green-800",
+  in_progress: "bg-blue-100 text-blue-800",
+  completed: "bg-gray-100 text-gray-800",
+  cancelled: "bg-red-100 text-red-800",
+};
 
   return (
     <div className="space-y-8">
@@ -114,8 +124,34 @@ const DashboardPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         <StatCard title="Customers" value={stats.totalCustomers} />
         <StatCard title="Active Bookings" value={stats.totalBookings} />
-        <StatCard title="Invoices" value={stats.totalInvoices} />
       </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-white p-6 rounded-lg shadow min-h-[420px]">
+          <h2 className="text-xl font-semibold mb-4">Recent Customers</h2>
+          <div className="space-y-3">{stats.latestCustomers.map((customer:any)=>(
+          <div key={customer.id} className="py-3 border-b border-gray-100">
+            <p className="font-semibold text-gray-900">{customer.name}</p>
+            <p className="text-sm text-gray-500">{formatDistanceToNow(new Date(customer.createdAt),{ addSuffix: true })}</p> 
+          </div>))}
+        </div>
+      </div>
+
+      <div className="bg-white p-6 rounded-lg shadow min-h-[420px]">
+       <h2 className="text-xl font-semibold mb-4">Recent Bookings</h2>
+        <div className="space-y-3">{stats.latestBookings.map((booking:any)=>(
+          <div key={booking.id} className="py-3 border-b border-gray-100">
+          <p className="font-medium">{booking.customer?.name}</p>
+          <p className="text-sm text-gray-500">{booking.service?.name}</p>
+            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+            statusStyles[booking.status] || "bg-gray-100 text-gray-800"}`}>
+            {booking.status.replace("_", " ")}
+            </span>
+          </div>))}
+        </div>
+       </div>
+
+</div>
 
       <div className="bg-white p-6 rounded-lg shadow">
         <h2 className="text-xl font-semibold mb-4">Financial Summary</h2>

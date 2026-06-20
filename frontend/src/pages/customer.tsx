@@ -16,6 +16,7 @@ const CustomerPage = () => {
     phone:"",
   });
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm ] = useState("");
   const fetchCustomer = async()=>{
     try{
       const data = await getCustomer();
@@ -68,6 +69,11 @@ const CustomerPage = () => {
       phone:customer.phone,
     });
   };
+  const filteredCustomers = customers.filter((customer)=>
+  customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  customer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  customer.phone.includes(searchTerm)
+  );
 
 
   return (
@@ -89,6 +95,10 @@ const CustomerPage = () => {
         <button type="submit" className="mt-4 px-4 py-2 bg-black text-white rounded">
           {editingId?"Update Customer":"Add Customer"}</button>
       </form>
+      <div className="mb-4">
+        <input type="text" placeholder="Search by name,email or phone..." value={searchTerm} 
+        onChange={(e)=>setSearchTerm(e.target.value)} className="w-full border p-2 rounded" />
+      </div>
       <div className="bg-white rounded shadow">
         <table className="w-full">
           <thead>
@@ -100,17 +110,17 @@ const CustomerPage = () => {
             </tr>
           </thead>
           <tbody>
-            {customers.map((customers)=>(
-              <tr key={customers.id} className="border-b">
-                <td className="p-3">{customers.name}</td>
-                <td className="p-3">{customers.email}</td>
+            {filteredCustomers.map((customer)=>(
+              <tr key={customer.id} className="border-b">
+                <td className="p-3">{customer.name}</td>
+                <td className="p-3">{customer.email}</td>
                   <td className="p-3 flex gap-2">
-                    <button onClick={()=>handleEditCustomer(customers)}
+                    <button onClick={()=>handleEditCustomer(customer)}
                       className="bg-blue-600 text-white px-3 py-1 rounded">Edit</button>                    
-                   <button onClick={()=>handleDeleteCustomer(customers.id)}
+                   <button onClick={()=>handleDeleteCustomer(customer.id)}
                    className="bg-red-600 text-white px-3 py-1 rounded">Delete</button>
                 </td>
-                <td className="p-3">{customers.phone}</td>
+                <td className="p-3">{customer.phone}</td>
               </tr>
             ))}
           </tbody>
