@@ -1,0 +1,37 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: saas-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: kush
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    container_name: saas-backend
+    restart: always
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgresql://postgres:kush@postgres:5432/postgres
+      JWT_SECRET: supersecret
+    ports:
+      - "5000:5000"
+
+  frontend:
+    build: ./frontend
+    container_name: saas-frontend
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "5173:5173"
+
+volumes:
+  postgres_data:
